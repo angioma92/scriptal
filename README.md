@@ -1,6 +1,8 @@
 # main install
-curl -OL https://github.com/angioma92/alscript/blob/main/arch-rus.sh <br>
-chmod +x arch-rus.sh <br>
-./arch-rus.sh <br>
+curl -OL https://git.io/JLjWt <br>
+chmod +x JLjWt <br>
+./JLjWt <br>
 # chroot
-curl -fsSL https://github.com/angioma92/alscript/blob/main/chroot.sh
+curl -fsSL https://git.io/JLjW3 <br>
+chmod +x JLjW3 <br>
+./JLjW3 <br>
