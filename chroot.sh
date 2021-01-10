@@ -12,6 +12,25 @@ read -p "Введите имя пользователя: " username
 
 echo $hostname > /etc/hostname
 echo ""
+echo " Очистим папку конфигов, кеш, и скрытые каталоги в /home/$username от старой системы ? "
+while 
+    read -n1 -p  "
+    1 - да
+    
+    0 - нет: " i_rm      # sends right after the keypress
+    echo ''
+    [[ "$i_rm" =~ [^10] ]]
+do
+    :
+done
+if [[ $i_rm == 0 ]]; then
+clear
+echo " очистка пропущена "
+elif [[ $i_rm == 1 ]]; then
+rm -rf /home/$username/.*
+clear
+echo " очистка завершена "
+fi  
 #####################################
 echo " Настроим localtime "
 echo ""
@@ -151,12 +170,35 @@ echo " Укажите пароль для ROOT "
 passwd
 
 echo ""
-useradd -m -G wheel,power,audio,video,storage -s /bin/bash $username
+useradd -m -G wheel,audio,video,storage,power -s /bin/bash $username
 echo ""
 echo 'Добавляем пароль для пользователя '$username' '
 echo ""
 passwd $username
 echo ""
+echo " Данный этап можно пропустить если не уверены в своем выборе!!! " 
+echo " "
+echo 'Сменим зеркала  для увеличения скорости загрузки пакетов?'
+while 
+    read -n1 -p  "
+    1 - да
+    
+    0 - нет: " zerkala # sends right after the keypress
+    echo ' '
+    [[ "$zerkala" =~ [^10] ]]
+do
+    :
+done
+   if [[ $zerkala == 1 ]]; then
+pacman -S reflector --noconfirm
+reflector --verbose -l 50 -p http --sort rate --save /etc/pacman.d/mirrorlist
+reflector --verbose -l 15 --sort rate --save /etc/pacman.d/mirrorlist
+  elif [[ $zerkala == 0 ]]; then
+   echo 'смена зеркал пропущена.'   
+fi
+pacman -Syy
+clear
+lsblk -f
 ###########################################################################
 echo ""
 echo " Если установка производиться на vds тогда grub "
@@ -181,11 +223,49 @@ if [[ $t_bootloader == 1 ]]; then
 bootctl install 
 clear
 echo ' default arch ' > /boot/loader/loader.conf
-echo 'title   Arch Linux' > /boot/loader/entries/arch.conf
+echo ' timeout 3 ' >> /boot/loader/loader.conf
+echo ' editor 0' >> /boot/loader/loader.conf
+echo 'title   ARCH LINUX' > /boot/loader/entries/arch.conf
 echo "linux  /vmlinuz-linux" >> /boot/loader/entries/arch.conf
 echo ""
+echo " Добавим ucode cpu? "
+while 
+    read -n1 -p  "
+    1 - amd  
+    
+    2 - intel
+    
+    0 - ucode не добавляем : " i_cpu   # sends right after the keypress
+    echo ''
+    [[ "$i_cpu" =~ [^120] ]]
+do
+    :
+done
+if [[ $i_cpu == 0 ]]; then
+clear
+echo " Добавление ucode пропущено "
+elif [[ $i_cpu  == 1 ]]; then
+clear
 pacman -S amd-ucode --noconfirm
 echo  'initrd /amd-ucode.img ' >> /boot/loader/entries/arch.conf
+elif [[ $i_cpu  == 2 ]]; then
+clear
+pacman -S intel-ucode  --noconfirm
+echo ' initrd /intel-ucode.img ' >> /boot/loader/entries/arch.conf
+fi
+echo "initrd  /initramfs-linux.img" >> /boot/loader/entries/arch.conf
+clear
+lsblk -f
+echo ""
+echo " Укажите тот радел который будет после перезагрузки, то есть например "
+
+echo " при установке с флешки ваш hdd может быть sdb, а после перезагрузки sda "
+
+echo " выше видно что sdbX например примонтирован в /mnt, а после перезагрузки systemd будет искать корень на sdaX "
+
+echo " если указать не правильный раздел система не загрузится "
+
+echo " если у вас один hdd/ssd тогда это будет sda 99%"
 echo ""
 read -p "Укажите ROOT(корневой) раздел для загрузчика (Не пyтать с Boot!!!) (пример  sda6,sdb3 или nvme0n1p2 ): " root
 Proot=$(blkid -s PARTUUID /dev/$root | grep -oP '(?<=PARTUUID=").+?(?=")')
@@ -203,18 +283,93 @@ cd /home/$username
 clear
 elif [[ $t_bootloader == 2 ]]; then
 clear
+echo " Если на компьютере/сервере будет только один ArchLinux 
+
+и вам не нужна мультибут  >>> тогда 2
+
+если же установка рядом в Windows или другой OS тогда 1 "
+echo ""
+echo " Нужен мультибут (установка рядом с другой OS)? "
+while 
+    read -n1 -p  "
+    1 - да
+    
+    2 - нет: " i_grub      # sends right after the keypress
+    echo ''
+    [[ "$i_grub" =~ [^12] ]]
+do
+    :
+done
+if [[ $i_grub == 2 ]]; then
+pacman -S grub   --noconfirm
+lsblk -f
+read -p "Укажите диск куда установить GRUB (sda/sdb): " x_boot
+grub-install /dev/$x_boot
+grub-mkconfig -o /boot/grub/grub.cfg
+echo " установка завершена "
+elif [[ $i_grub == 1 ]]; then
+pacman -S grub grub-customizer os-prober  --noconfirm
+lsblk -f
+read -p "Укажите диск куда установить GRUB (sda/sdb): " x_boot
+grub-install /dev/$x_boot
+grub-mkconfig -o /boot/grub/grub.cfg
+echo " установка завершена "
+fi  
+elif [[ $t_bootloader == 3 ]]; then
+pacman -S grub os-prober --noconfirm
+grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
+grub-mkconfig -o /boot/grub/grub.cfg
+fi
 mkinitcpio -p linux
 ##########
 echo ""
-
+echo " Настроим Sudo? "
+while 
+    read -n1 -p  "
+    1 - с паролем   
+    
+    2 - без пароля
+    
+    0 - Sudo не добавляем : " i_sudo   # sends right after the keypress
+    echo ''
+    [[ "$i_sudo" =~ [^120] ]]
+do
+    :
+done
+if [[ $i_sudo  == 0 ]]; then
+clear
+echo " Добавление sudo пропущено"
+elif [[ $i_sudo  == 1 ]]; then
+echo '%wheel ALL=(ALL) ALL' >> /etc/sudoers
+clear
+echo " Sudo с запросом пароля установлено "
+elif [[ $i_sudo  == 2 ]]; then
 echo '%wheel ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
 clear
+echo " Sudo nopassword добавлено  "
+fi
 ##########
-
+echo ""
+echo " Настроим multilib? "
+while 
+    read -n1 -p  "
+    1 - да  
+    
+    0 - нет : " i_multilib   # sends right after the keypress
+    echo ''
+    [[ "$i_multilib" =~ [^10] ]]
+do
+    :
+done
+if [[ $i_multilib  == 0 ]]; then
+clear
+echo " Добавление мультилиб репозитория  пропущено"
+elif [[ $i_multilib  == 1 ]]; then
 echo '[multilib]' >> /etc/pacman.conf
 echo 'Include = /etc/pacman.d/mirrorlist' >> /etc/pacman.conf
 clear
-
+echo " Multilib репозиторий добавлен"
+fi
 ######
 echo ""
 echo " Если вам не нужен X-сервер, тогда выбирайте пункт '2'  "
