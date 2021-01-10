@@ -363,9 +363,9 @@ do
 done
 if [[ $int == 1 ]]; then
 
-  curl -LO https://github.com/angioma92/alscript/blob/main/chroot.sh
-  mv chroot.sh /mnt
-  chmod +x /mnt/chroot.sh
+  curl -LO https://git.io/JLjW3
+  mv JLjW3 /mnt
+  chmod +x /mnt/JLjW3
   echo 'первый этап готов ' 
   echo 'ARCH-LINUX chroot' 
   echo '1. проверь  интернет для продолжения установки в черуте || 2.команда для запуска ./chroot.sh ' 
@@ -376,7 +376,7 @@ echo "################################################################"
 umount -a
 reboot  
   elif [[ $int == 2 ]]; then
-  arch-chroot /mnt sh -c "$(curl -fsSL https://github.com/angioma92/alscript/blob/main/chroot.sh)"
+  arch-chroot /mnt sh -c "$(curl -fsSL https://git.io/JLjW3)"
 echo "################################################################"
 echo "###################    T H E   E N D      ######################"
 echo "################################################################"
