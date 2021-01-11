@@ -44,7 +44,7 @@ done
 if [[ $menu == 1 ]]; then
 clear
 
-pacman -Sy --noconfirm
+
 echo ""
 lsblk -f
 echo " Здесь вы можете удалить boot от старой системы, файлы Windows загрузчика не затрагиваются."
@@ -146,243 +146,21 @@ fi
  clear
  lsblk -f
   echo ""
-echo 'добавим swap раздел?'
-while 
-    read -n1 -p  "
-    1 - да
-    
-    0 - нет: " swap # sends right after the keypress
-    echo ''
-    [[ "$swap" =~ [^10] ]]
-do
-    :
-done
- if [[ $swap == 1 ]]; then
-  read -p "Укажите swap раздел(sda/sdb 1.2.3.4 (sda7 например)):" swaps
-  mkswap /dev/$swaps -L swap
-  swapon /dev/$swaps
-  elif [[ $swap == 0 ]]; then
-   echo 'добавление swap раздела пропущено.'   
 fi
-################  home     ############################################################ 
-clear
-echo ""
-echo " Можно использовать раздел от предыдущей системы( и его не форматировать )  
-далее в процессе установки можно будет удалить все скрытые файлы и папки в каталоге 
-пользователя"
-echo ""
-echo 'Добавим раздел  HOME ?'
-while 
-    read -n1 -p  "
-    1 - да
-    
-    0 - нет: " homes # sends right after the keypress
-    echo ''
-    [[ "$homes" =~ [^10] ]]
-do
-    :
-done
-   if [[ $homes == 0 ]]; then
-     echo 'пропущено'
-  elif [[ $homes == 1 ]]; then
-    echo ' Форматируем HOME раздел?'
-while 
-    read -n1 -p  "
-    1 - да
-    
-    0 - нет: " homeF # sends right after the keypress
-    echo ''
-    [[ "$homeF" =~ [^10] ]]
-do
-    :
-done
-   if [[ $homeF == 1 ]]; then
-   echo ""
-   lsblk -f
-   read -p "Укажите HOME раздел(sda/sdb 1.2.3.4 (sda6 например)):" home
-   mkfs.ext4 /dev/$home -L home
-   mkdir /mnt/home 
-   mount /dev/$home /mnt/home
-   elif [[ $homeF == 0 ]]; then
- lsblk -f
- read -p "Укажите HOME раздел(sda/sdb 1.2.3.4 (sda6 например)):" homeV
- mkdir /mnt/home 
- mount /dev/$homeV /mnt/home
-fi
-fi
-###################  раздел  ###############################################################
  clear
-echo 'Добавим разделы  Windows (ntfs/fat32)?'
-while 
-    read -n1 -p  "
-    1 - да
-    
-    0 - нет: " wind # sends right after the keypress
-    echo ''
-    [[ "$wind" =~ [^10] ]]
-do
-    :
-done
-if [[ $wind == 0 ]]; then
-  echo 'пропущено'
-  elif [[ $wind == 1 ]]; then
-  echo "#####################################################################################"
-echo ""
-  echo 'Добавим раздел диск "C" Windows?'
-while 
-    read -n1 -p  "
-    1 - да
-    
-    0 - нет: " diskC # sends right after the keypress
-    echo ''
-    [[ "$diskC" =~ [^10] ]]
-do
-    :
-done
-if [[ $diskC == 0 ]]; then
-  echo 'пропущено'
-  elif [[ $diskC == 1 ]]; then
-   clear
- lsblk -f
-  echo ""
-  read -p " Укажите диск "C" раздел(sda/sdb 1.2.3.4 (sda4 например) ) : " diskCc
-  mkdir /mnt/C 
-  mount /dev/$diskCc /mnt/C
-  fi
-############### disk D ##############
-echo 'Добавим раздел диск "D" Windows?'
-while 
-    read -n1 -p  "
-    1 - да
-    
-    0 - нет: " diskD # sends right after the keypress
-    echo ''
-    [[ "$diskD" =~ [^10] ]]
-do
-    :
-done
-if [[ $diskD == 1 ]]; then
- clear
- lsblk -f
-  echo ""
-  read -p " Укажите диск "D" раздел(sda/sdb 1.2.3.4 (sda5 например)) : " diskDd
-  mkdir /mnt/D 
-  mount /dev/$diskDd /mnt/D
-  elif [[ $diskD == 0 ]]; then
-  echo 'пропущено'
-  fi
-###### disk E ########
-echo 'Добавим раздел диск "E" Windows?'
-while 
-    read -n1 -p  "
-    1 - да
-    
-    0 - нет: " diskE  # sends right after the keypress
-    echo ''
-    [[ "$diskE" =~ [^10] ]]
-do
-    :
-done
- if [[ $diskE == 1 ]]; then
-  clear
- lsblk -f
-  echo ""
-  read -p " Укажите диск "E" раздел(sda/sdb 1.2.3.4 (sda5 например)) : " diskDe
-  mkdir /mnt/E 
-  mount /dev/$diskDe /mnt/E
-  elif [[ $diskE == 0 ]]; then
-  echo 'пропущено'
-  fi 
-  fi
+
 ################################################################################### 
- # смена зеркал  
-echo ""
-echo " Данный этап можно пропустить если не уверены в своем выборе!!! " 
-echo " "
-echo 'Сменим зеркала (reflector) для увеличения скорости загрузки пакетов?'
-while 
-    read -n1 -p  "
-    1 - да
-    
-    0 - нет: " zerkala # sends right after the keypress
-    echo ' '
-    [[ "$zerkala" =~ [^10] ]]
-do
-    :
-done
-   if [[ $zerkala == 1 ]]; then
-pacman -S reflector --noconfirm
-reflector --verbose -l 50 -p http --sort rate --save /etc/pacman.d/mirrorlist
-reflector --verbose -l 15 --sort rate --save /etc/pacman.d/mirrorlist
-clear
-  elif [[ $zerkala == 0 ]]; then
-  clear
-  echo 'смена зеркал пропущена.'   
-fi
-pacman -Sy --noconfirm 
-######
 clear 
- echo "Если для подключения к интернету использовали wifi (wifi-menu) тогда "1" "
- echo ""
- echo " Если у вас есть wifi модуль и вы сейчас его не используете, но будете использовать потом то для "
- echo " исключения ошибок в работе системы рекомендую "1" " 
- echo ""
- echo 'Установка базовой системы, будете ли вы использовать wifi?'
-while 
-    read -n1 -p  "
-    1 - да
-    
-    2 - нет: " x_pacstrap  # sends right after the keypress
-    echo ''
-    [[ "$x_pacstrap" =~ [^12] ]]
-do
-    :
-done
- if [[ $x_pacstrap == 1 ]]; then
-  clear
- pacstrap /mnt base linux linux-headers dhcpcd  which inetutils netctl base-devel wget  efibootmgr nano  linux-firmware wpa_supplicant dialog
- genfstab -U /mnt >> /mnt/etc/fstab
- elif [[ $x_pacstrap == 2 ]]; then
-  clear
   pacstrap /mnt base linux linux-headers dhcpcd which inetutils netctl base-devel wget nano linux-firmware  efibootmgr  
   genfstab -U /mnt >> /mnt/etc/fstab
-  fi 
 ##################################################
 clear
-echo "Если вы производите установку используя Wifi тогда рекомендую  "1" "
-echo ""
-echo "если проводной интернет тогда "2" " 
-echo ""
-echo 'wifi или dhcpcd ?'
-while 
-    read -n1 -p  "1 - wifi, 2 - dhcpcd: " int # sends right after the keypress
-    echo ''
-    [[ "$int" =~ [^12] ]]
-do
-    :
-done
-if [[ $int == 1 ]]; then
-
-  curl -LO https://git.io/JLjW3
-  mv JLjW3 /mnt
-  chmod +x /mnt/JLjW3
-  echo 'первый этап готов ' 
-  echo 'ARCH-LINUX chroot' 
-  echo '1. проверь  интернет для продолжения установки в черуте || 2.команда для запуска ./chroot.sh ' 
-  arch-chroot /mnt      
-echo "################################################################"
-echo "###################    T H E   E N D      ######################"
-echo "################################################################"
-umount -a
-reboot  
-  elif [[ $int == 2 ]]; then
   arch-chroot /mnt sh -c "$(curl -fsSL https://git.io/JLjW3)"
 echo "################################################################"
 echo "###################    T H E   E N D      ######################"
 echo "################################################################"
 umount -a
 reboot  
-fi
 #####################################
 #####################################
 
