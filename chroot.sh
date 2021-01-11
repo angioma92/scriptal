@@ -1,6 +1,5 @@
  
 #!/bin/bash
-echo 'скрипт второй настройка системы в chroot '
 timedatectl set-ntp true
 pacman -Syyu  --noconfirm
 echo ""
@@ -11,158 +10,12 @@ echo ""
 read -p "Введите имя пользователя: " username
 
 echo $hostname > /etc/hostname
-echo ""
-echo " Очистим папку конфигов, кеш, и скрытые каталоги в /home/$username от старой системы ? "
-while 
-    read -n1 -p  "
-    1 - да
-    
-    0 - нет: " i_rm      # sends right after the keypress
-    echo ''
-    [[ "$i_rm" =~ [^10] ]]
-do
-    :
-done
-if [[ $i_rm == 0 ]]; then
-clear
-echo " очистка пропущена "
-elif [[ $i_rm == 1 ]]; then
-rm -rf /home/$username/.*
-clear
-echo " очистка завершена "
-fi  
-#####################################
-echo " Настроим localtime "
-echo ""
-echo " Укажите город(1-27) и нажмите Enter  "
- while 
-    read   -p  "
-    1 - Калининград        14 - Красноярск
-    
-    2 - Киев               15 - Магадан
-    
-    3 - Киров              16 - Новокузнецк
-    
-    4 - Минск              17 - Новосибирск
-    
-    5 - Москва             18 - Омск
-    
-    6 - Самара             19 - Уральск
-    
-    7 - Саратов            20 - Алматы
-    
-    8 - Ульяновск          21 - Среднеколымск
-
-    9 - Запарожье          22 - Ташкент
-
-    10 - Чита              23 - Тбилиси
-    
-    11 - Иркутск           24 - Томск
-    
-    12 - Стамбул           25 - Якутск
-    
-    13 - Камчатка          26 - Екатеринбург
-    
-                27 - Ереван
-
-
-0 - пропустить  : " wm_sity 
-    echo ''
-    [[ $wm_sity -lt 0 ||$wm_sity -gt 27 || "$wm_sity" =~ [^12345670] ]]
-do
-    :
-done
-if [[ $wm_sity == 1 ]]; then
-   ln -sf /usr/share/zoneinfo/Europe/Kaliningrad /etc/localtime
-    echo " Калиниград "
-elif [[ $wm_sity == 2 ]]; then
-  ln -sf /usr/share/zoneinfo/Europe/Kiev /etc/localtime
-    echo " Киев  "
-elif [[ $wm_sity == 3 ]]; then
-   ln -sf /usr/share/zoneinfo/Europe/Kirov /etc/localtime
-    echo " Киров  "
-elif [[ $wm_sity == 4 ]]; then
-    ln -sf /usr/share/zoneinfo/Europe/Minsk /etc/localtime
-    echo " Минск  "
-elif [[ $wm_sity == 5 ]]; then
-    ln -sf /usr/share/zoneinfo/Europe/Moscow /etc/localtime
-    echo " Москва  "
-elif [[ $wm_sity == 6 ]]; then
-    ln -sf /usr/share/zoneinfo/Europe/Samara /etc/localtime
-    echo " Самара   "
-elif [[ $wm_sity == 7 ]]; then
-    ln -sf /usr/share/zoneinfo/Europe/Saratov /etc/localtime
-    echo " Саратов   "
-elif [[ $wm_sity == 8 ]]; then
-   ln -sf /usr/share/zoneinfo/Europe/Ulyanovsk /etc/localtime
-    echo " Ульяновск  "
-elif [[ $wm_sity == 9 ]]; then
-    ln -sf /usr/share/zoneinfo/Europe/Zaporozhye /etc/localtime
-    echo " Запорожье "
-elif [[ $wm_sity == 10 ]]; then
-   ln -sf /usr/share/zoneinfo/Asia/Chita /etc/localtime
-    echo " Чита "
-elif [[ $wm_sity == 11 ]]; then
-    ln -sf /usr/share/zoneinfo/Asia/Irkutsk /etc/localtime
-    echo " Иркутск  "
-elif [[ $wm_sity == 12 ]]; then
-   ln -sf /usr/share/zoneinfo/Asia/Istanbul /etc/localtime
-    echo " Стамбул  "
-elif [[ $wm_sity == 13 ]]; then
-    ln -sf /usr/share/zoneinfo/Asia/Kamchatka /etc/localtime
-    echo " Камчатка "
-elif [[ $wm_sity == 14 ]]; then
-    ln -sf /usr/share/zoneinfo/Asia/Krasnoyarsk /etc/localtime
-    echo " Красноярск "
-elif [[ $wm_sity == 15 ]]; then
-    ln -sf /usr/share/zoneinfo/Asia/Magadan /etc/localtime
-    echo " Магадан   "
-elif [[ $wm_sity == 16 ]]; then
-    ln -sf /usr/share/zoneinfo/Asia/Novokuznetsk /etc/localtime
-    echo " Новокузнецк   "
-elif [[ $wm_sity == 17 ]]; then
-   ln -sf /usr/share/zoneinfo/Asia/Novosibirsk /etc/localtime
-    echo " Новосибирск  "
-elif [[ $wm_sity == 18 ]]; then
-    ln -sf /usr/share/zoneinfo/Asia/Omsk /etc/localtime
-    echo " Омск "
-elif [[ $wm_sity == 19 ]]; then
-   ln -sf /usr/share/zoneinfo/Asia/Oral /etc/localtime
-    echo " Уральск "
-elif [[ $wm_sity == 20 ]]; then
-    ln -sf /usr/share/zoneinfo/Asia/Almaty /etc/localtime
-    echo " Алматы  "
-elif [[ $wm_sity == 21 ]]; then
-   ln -sf /usr/share/zoneinfo/Asia/Srednekolymsk /etc/localtime
-    echo " Среднеколымск  "
-elif [[ $wm_sity == 22 ]]; then
-    ln -sf /usr/share/zoneinfo/Asia/Tashkent /etc/localtime
-    echo " Ташкент "
-elif [[ $wm_sity == 23 ]]; then
-   ln -sf /usr/share/zoneinfo/Asia/Tbilisi /etc/localtime
-    echo " Тбилиси "
-elif [[ $wm_sity == 24 ]]; then
-   ln -sf /usr/share/zoneinfo/Asia/Tomsk /etc/localtime
-    echo " Томск   "
-elif [[ $wm_sity == 25 ]]; then
-    ln -sf /usr/share/zoneinfo/Asia/Yakutsk /etc/localtime
-    echo " Якутск   "
-elif [[ $wm_sity == 26 ]]; then
-    ln -sf /usr/share/zoneinfo/Asia/Yekaterinburg /etc/localtime
-    echo " Екатеринбург "
-elif [[ $wm_sity == 27 ]]; then
-    ln -sf /usr/share/zoneinfo/Asia/Yerevan /etc/localtime
-    echo " Ереван "
-elif [[ $wm_sity == 0 ]]; then
-clear
-echo " Этап пропущен "
-echo ""
-fi
+ln -sf /usr/share/zoneinfo/Asia/Irkutsk /etc/localtime
 #####################################
 echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
 echo "ru_RU.UTF-8 UTF-8" >> /etc/locale.gen
 locale-gen
-echo 'LANG="ru_RU.UTF-8"' > /etc/locale.conf 
+echo 'LANG=ru_RU.UTF-8' > /etc/locale.conf 
 echo "KEYMAP=ru" >> /etc/vconsole.conf
 echo "FONT=cyr-sun16" >> /etc/vconsole.conf
 echo ""
@@ -176,86 +29,18 @@ echo 'Добавляем пароль для пользователя '$username
 echo ""
 passwd $username
 echo ""
-echo " Данный этап можно пропустить если не уверены в своем выборе!!! " 
-echo " "
-echo 'Сменим зеркала  для увеличения скорости загрузки пакетов?'
-while 
-    read -n1 -p  "
-    1 - да
-    
-    0 - нет: " zerkala # sends right after the keypress
-    echo ' '
-    [[ "$zerkala" =~ [^10] ]]
-do
-    :
-done
-   if [[ $zerkala == 1 ]]; then
-pacman -S reflector --noconfirm
-reflector --verbose -l 50 -p http --sort rate --save /etc/pacman.d/mirrorlist
-reflector --verbose -l 15 --sort rate --save /etc/pacman.d/mirrorlist
-  elif [[ $zerkala == 0 ]]; then
-   echo 'смена зеркал пропущена.'   
-fi
-pacman -Syy
+
 clear
-lsblk -f
-###########################################################################
-echo ""
-echo " Если установка производиться на vds тогда grub "
-echo ""
-echo " Если у вас версия UEFI моложе 2013г. тогда ставьте UEFI-grub "
-echo ""
-echo "Какой загрузчик установить UEFI(systemd или GRUB) или Grub-legacy"
-while 
-    read -n1 -p  "
-    1 - UEFI(systemd-boot )
-  
-    2 - GRUB(legacy)
-    
-    3 - UEFI-GRUB: " t_bootloader # sends right after the keypress
-    
-    echo ''
-    [[ "$t_bootloader" =~ [^123] ]]
-do
-    :
-done
-if [[ $t_bootloader == 1 ]]; then
+
 bootctl install 
 clear
 echo ' default arch ' > /boot/loader/loader.conf
-echo ' timeout 3 ' >> /boot/loader/loader.conf
-echo ' editor 0' >> /boot/loader/loader.conf
 echo 'title   ARCH LINUX' > /boot/loader/entries/arch.conf
 echo "linux  /vmlinuz-linux" >> /boot/loader/entries/arch.conf
-echo ""
-echo " Добавим ucode cpu? "
-while 
-    read -n1 -p  "
-    1 - amd  
-    
-    2 - intel
-    
-    0 - ucode не добавляем : " i_cpu   # sends right after the keypress
-    echo ''
-    [[ "$i_cpu" =~ [^120] ]]
-do
-    :
-done
-if [[ $i_cpu == 0 ]]; then
-clear
-echo " Добавление ucode пропущено "
-elif [[ $i_cpu  == 1 ]]; then
-clear
+
 pacman -S amd-ucode --noconfirm
 echo  'initrd /amd-ucode.img ' >> /boot/loader/entries/arch.conf
-elif [[ $i_cpu  == 2 ]]; then
-clear
-pacman -S intel-ucode  --noconfirm
-echo ' initrd /intel-ucode.img ' >> /boot/loader/entries/arch.conf
-fi
-echo "initrd  /initramfs-linux.img" >> /boot/loader/entries/arch.conf
-clear
-lsblk -f
+
 echo ""
 echo " Укажите тот радел который будет после перезагрузки, то есть например "
 
@@ -269,7 +54,7 @@ echo " если у вас один hdd/ssd тогда это будет sda 99%"
 echo ""
 read -p "Укажите ROOT(корневой) раздел для загрузчика (Не пyтать с Boot!!!) (пример  sda6,sdb3 или nvme0n1p2 ): " root
 Proot=$(blkid -s PARTUUID /dev/$root | grep -oP '(?<=PARTUUID=").+?(?=")')
-echo options root=PARTUUID=$Proot rw >> /boot/loader/entries/arch.conf
+echo options root=PARTUUID=$Proot rw quiet splash mitigations=off amdgpu.ppfeaturemask=0xffffffff >> /boot/loader/entries/arch.conf
 #
 cd /home/$username 
 git clone https://aur.archlinux.org/systemd-boot-pacman-hook.git
@@ -281,45 +66,6 @@ rm -Rf /home/$username/systemd-boot-pacman-hook
 cd /home/$username 
 #
 clear
-elif [[ $t_bootloader == 2 ]]; then
-clear
-echo " Если на компьютере/сервере будет только один ArchLinux 
-
-и вам не нужна мультибут  >>> тогда 2
-
-если же установка рядом в Windows или другой OS тогда 1 "
-echo ""
-echo " Нужен мультибут (установка рядом с другой OS)? "
-while 
-    read -n1 -p  "
-    1 - да
-    
-    2 - нет: " i_grub      # sends right after the keypress
-    echo ''
-    [[ "$i_grub" =~ [^12] ]]
-do
-    :
-done
-if [[ $i_grub == 2 ]]; then
-pacman -S grub   --noconfirm
-lsblk -f
-read -p "Укажите диск куда установить GRUB (sda/sdb): " x_boot
-grub-install /dev/$x_boot
-grub-mkconfig -o /boot/grub/grub.cfg
-echo " установка завершена "
-elif [[ $i_grub == 1 ]]; then
-pacman -S grub grub-customizer os-prober  --noconfirm
-lsblk -f
-read -p "Укажите диск куда установить GRUB (sda/sdb): " x_boot
-grub-install /dev/$x_boot
-grub-mkconfig -o /boot/grub/grub.cfg
-echo " установка завершена "
-fi  
-elif [[ $t_bootloader == 3 ]]; then
-pacman -S grub os-prober --noconfirm
-grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
-grub-mkconfig -o /boot/grub/grub.cfg
-fi
 mkinitcpio -p linux
 ##########
 echo ""
@@ -399,7 +145,7 @@ do
     :
 done
 if [[ $i_vbox  == 0 ]]; then
-pacman -Sy xorg-server xorg-drivers --noconfirm
+pacman -Sy xorg-server xorg-drivers xorg-xdpyinfo mesa-demos --noconfirm
 elif [[ $i_vbox  == 1 ]]; then
 pacman -Sy xorg-server xorg-drivers xorg-xinit virtualbox-guest-utils --noconfirm
 fi
@@ -504,7 +250,7 @@ fi
 clear
 echo "Xfce успешно установлено"
 elif [[ $x_de == 3 ]]; then
-pacman -S gnome gnome-extra  --noconfirm
+pacman -S gnome gnome-tweaks chrome-gnome-shell  --noconfirm
 clear
 echo " Gnome успешно установлен " 
 elif [[ $x_de == 4 ]]; then
@@ -878,8 +624,7 @@ do
     :
 done
 if [[ $i_sound  == 1 ]]; then
-pacman -Sy pulseaudio-bluetooth alsa-utils pulseaudio-equalizer-ladspa   --noconfirm
-systemctl enable bluetooth.service
+pacman -Sy pulseaudio alsa-utils alsa-lib pavucontrol pulseaudio-equalizer-ladspa   --noconfirm
 elif [[ $i_sound  == 0 ]]; then
 echo " Установка пропущена "
 fi
@@ -1247,7 +992,7 @@ echo " установка завершена "
 fi
 fi
 ###############################################################################
-pacman -S  ttf-arphic-ukai git ttf-liberation ttf-dejavu ttf-arphic-uming ttf-fireflysung ttf-sazanami --noconfirm
+pacman -S  git ttf-liberation ttf-dejavu htop neofetch --noconfirm
 clear
 echo "################################################################"
 echo ""
@@ -1300,115 +1045,6 @@ rm -Rf /home/$username/google-chrome
 clear
 fi
 #############################################################################
-echo ""
-echo ""
-echo " установим офисный пакет libreoffice  для работы с документами? : "
-while 
-    read -n1 -p  "
-    1 - да 
-    
-    0 - нет: " t_office # sends right after the keypress
-    echo ''
-    [[ "$t_office" =~ [^1230] ]]
-do
-    :
-done
-if [[ $t_office == 0 ]]; then
-    clear
-    echo ' установка пропущена ' 
-elif [[ $t_office == 1 ]]; then
-pacman -S libreoffice-still libreoffice-still-ru --noconfirm
-clear
-echo " установка libreoffice завершена "
-fi
-#############################################################################
-echo ""
-echo " Установим ssh(клиент) для удаленного доступа ? : "
-while 
-    read -n1 -p  "
-    1 - да
-    
-    0 - нет: " t_ssh # sends right after the keypress
-    echo ''
-    [[ "$t_ssh" =~ [^10] ]]
-do
-    :
-done
-if [[ $t_ssh == 0 ]]; then
-  echo 'уcтановка  пропущена' 
-elif [[ $t_ssh == 1 ]]; then
-pacman -S openssh --noconfirm
-clear
-echo ""
-echo " Включим в автозагрузку ssh(server) для удаленного доступа к этому пк ? : "
-while 
-    read -n1 -p  "
-    1 - да
-    
-    0 - нет: " t_ssh1 # sends right after the keypress
-    echo ''
-    [[ "$t_ssh1" =~ [^10] ]]
-do
-    :
-done
-if [[ $t_ssh1 == 0 ]]; then
-clear
-  echo ' сервис sshd не включен' 
-elif [[ $t_ssh1 == 1 ]]; then
-systemctl enable sshd.service
-clear
-fi
-fi
-echo "######    ZSH   #####"
-echo ""
-echo " установим zsh(такой же, как и в установочном образе Archlinux) или оставим Bash по умолчанию ? "
-echo ""
-echo "при необходимости можно будет установить другую оболочку в уже установленной системе "
-while 
-    read -n1 -p  "
-    1 - установить zsh 
-    2 - оставим bash по умолчанию " x_shell
-    echo ''
-    [[ "$x_shell" =~ [^12] ]]
-do
-    :
-done
-if [[ $x_shell == 0 ]]; then
-clear
-  echo ' оболочка не изменена, по умолчанию bash!"  ' 
-elif [[ $x_shell == 1 ]]; then
-clear
-pacman -S zsh  zsh-syntax-highlighting zsh-autosuggestions grml-zsh-config --noconfirm
-echo 'source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh' >> /etc/zsh/zshrc
-echo 'source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh' >> /etc/zsh/zshrc
-echo 'prompt adam2' >> /etc/zsh/zshrc
-clear
-echo " сменим оболочку пользователя с bash на zsh? "
-while 
-    read -n1 -p  "
-    1 - да
-    
-    0 - нет: " t_shell # sends right after the keypress
-    echo ''
-    [[ "$t_shell" =~ [^10] ]]
-do
-    :
-done
-if [[ $t_shell == 0 ]]; then
-clear
-echo 'пользовательская оболочка не изменена ( по умолчанию BASH )' 
-elif [[ $t_shell == 1 ]]; then
-chsh -s /bin/zsh
-chsh -s /bin/zsh $username
-clear
-echo " при первом запуске консоли(терминала) нажмите "0" "
-echo " оболочка изменена с bash на zsh "
-fi
-fi
-echo "#############################################################################"
-pacman -Sy --noconfirm
-##############################################
-echo ""
 echo ""
 echo "##################################################################################"
 echo "###################   <<<< установка программ из AUR >>>    ######################"
