@@ -11,7 +11,6 @@ read -p "Введите имя пользователя: " username
 
 echo $hostname > /etc/hostname
 ln -sf /usr/share/zoneinfo/Asia/Irkutsk /etc/localtime
-#####################################
 echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
 echo "ru_RU.UTF-8 UTF-8" >> /etc/locale.gen
 locale-gen
@@ -40,19 +39,9 @@ echo "linux  /vmlinuz-linux" >> /boot/loader/entries/arch.conf
 
 pacman -S amd-ucode --noconfirm
 echo  'initrd /amd-ucode.img ' >> /boot/loader/entries/arch.conf
-
+echo "initrd  /initramfs-linux.img" >> /boot/loader/entries/arch.conf
 echo ""
-echo " Укажите тот радел который будет после перезагрузки, то есть например "
-
-echo " при установке с флешки ваш hdd может быть sdb, а после перезагрузки sda "
-
-echo " выше видно что sdbX например примонтирован в /mnt, а после перезагрузки systemd будет искать корень на sdaX "
-
-echo " если указать не правильный раздел система не загрузится "
-
-echo " если у вас один hdd/ssd тогда это будет sda 99%"
-echo ""
-read -p "Укажите ROOT(корневой) раздел для загрузчика (Не пyтать с Boot!!!) (пример  sda6,sdb3 или nvme0n1p2 ): " root
+read -p "ROOT раздел для загрузчика: " root
 Proot=$(blkid -s PARTUUID /dev/$root | grep -oP '(?<=PARTUUID=").+?(?=")')
 echo options root=PARTUUID=$Proot rw quiet splash mitigations=off amdgpu.ppfeaturemask=0xffffffff >> /boot/loader/entries/arch.conf
 #
@@ -69,89 +58,15 @@ clear
 mkinitcpio -p linux
 ##########
 echo ""
-echo " Настроим Sudo? "
-while 
-    read -n1 -p  "
-    1 - с паролем   
-    
-    2 - без пароля
-    
-    0 - Sudo не добавляем : " i_sudo   # sends right after the keypress
-    echo ''
-    [[ "$i_sudo" =~ [^120] ]]
-do
-    :
-done
-if [[ $i_sudo  == 0 ]]; then
-clear
-echo " Добавление sudo пропущено"
-elif [[ $i_sudo  == 1 ]]; then
-echo '%wheel ALL=(ALL) ALL' >> /etc/sudoers
-clear
-echo " Sudo с запросом пароля установлено "
-elif [[ $i_sudo  == 2 ]]; then
+
 echo '%wheel ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
 clear
-echo " Sudo nopassword добавлено  "
-fi
-##########
-echo ""
-echo " Настроим multilib? "
-while 
-    read -n1 -p  "
-    1 - да  
-    
-    0 - нет : " i_multilib   # sends right after the keypress
-    echo ''
-    [[ "$i_multilib" =~ [^10] ]]
-do
-    :
-done
-if [[ $i_multilib  == 0 ]]; then
-clear
-echo " Добавление мультилиб репозитория  пропущено"
-elif [[ $i_multilib  == 1 ]]; then
 echo '[multilib]' >> /etc/pacman.conf
 echo 'Include = /etc/pacman.d/mirrorlist' >> /etc/pacman.conf
 clear
-echo " Multilib репозиторий добавлен"
-fi
-######
 echo ""
-echo " Если вам не нужен X-сервер, тогда выбирайте пункт '2'  "
-echo ""
-echo " Установка производиться на vds или на ПК? "
-while 
-    read -n1 -p  "
-    1 - ПК  
-    
-    2 - vds : " i_xorg # sends right after the keypress
-    echo ''
-    [[ "$i_xorg" =~ [^12] ]]
-do
-    :
-done
-if [[ $i_xorg  == 1 ]]; then
-echo ""
-echo " Устанавливаем на виртуальную машину ? "
-while 
-    read -n1 -p  "
-    1 - да  
-    
-    0 - нет : " i_vbox   # sends right after the keypress
-    echo ''
-    [[ "$i_vbox" =~ [^10] ]]
-do
-    :
-done
-if [[ $i_vbox  == 0 ]]; then
+
 pacman -Sy xorg-server xorg-drivers xorg-xdpyinfo mesa-demos --noconfirm
-elif [[ $i_vbox  == 1 ]]; then
-pacman -Sy xorg-server xorg-drivers xorg-xinit virtualbox-guest-utils --noconfirm
-fi
-elif [[ $i_xorg  == 2 ]]; then
-echo " установка на vds  "
-fi
 pacman -Syy
 echo "#####################################################################"
 echo ""
@@ -570,454 +485,26 @@ systemctl enable gdm.service -f
 clear
 echo " установка gdm завершена "
 fi
-echo "#####################################################################"
-echo ""
-echo " Нужен NetworkManager ? "
-while 
-    read -n1 -p  "
-    1 - да  
-    
-    0 - нет : " i_network   # sends right after the keypress
-    echo ''
-    [[ "$i_network" =~ [^10] ]]
-do
-    :
-done
-if [[ $i_network  == 1 ]]; then
-pacman -Sy networkmanager networkmanager-openvpn network-manager-applet ppp --noconfirm
-systemctl enable NetworkManager.service
-elif [[ $i_network  == 0 ]]; then
-echo " Установка NetworkManager пропущена "
-echo ""
-echo " Добавим dhcpcd в автозагрузку( для проводного интернета, который  получает настройки от роутера ) ? "
-echo ""
-echo "при необходимости это можно будет сделать уже в установленной системе "
-while 
-    read -n1 -p  "
-    1 - включить dhcpcd 
-    
-    0 - не включать dhcpcd " x_dhcpcd
-    echo ''
-    [[ "$x_dhcpcd" =~ [^10] ]]
-do
-    :
-done
-if [[ $x_dhcpcd == 0 ]]; then
-  echo ' dhcpcd не включен в автозагрузку, при необходиости это можно будет сделать уже в установленной системе ' 
-elif [[ $x_dhcpcd == 1 ]]; then
+
 systemctl enable dhcpcd.service
-clear
-echo "Dhcpcd успешно добавлен в автозагрузку"
-fi
-fi
+
 clear
 echo ""
-echo " Нужна поддержка звука ? "
-while 
-    read -n1 -p  "
-    1 - да  
-    
-    0 - нет : " i_sound   # sends right after the keypress
-    echo ''
-    [[ "$i_sound" =~ [^10] ]]
-do
-    :
-done
-if [[ $i_sound  == 1 ]]; then
+
 pacman -Sy pulseaudio alsa-utils alsa-lib pavucontrol pulseaudio-equalizer-ladspa   --noconfirm
-elif [[ $i_sound  == 0 ]]; then
-echo " Установка пропущена "
-fi
-####
-clear
-echo ""
-echo " Нужна поддержка ntfs и fat ? "
-while 
-    read -n1 -p  "
-    1 - да  
-    
-    0 - нет : " i_fat   # sends right after the keypress
-    echo ''
-    [[ "$i_fat" =~ [^10] ]]
-do
-    :
-done
-if [[ $i_fat  == 1 ]]; then
+
 pacman -Sy exfat-utils ntfs-3g   --noconfirm
-elif [[ $i_fat == 0 ]]; then
-echo " Установка пропущена "
-fi
 #####
 clear
-echo ""
-echo " Нужны программы для работы с архивами? "
-while 
-    read -n1 -p  "
-    1 - ark ( Plasma(kde)- так же можно и для другого de )  
-    
-    2 - file-roller легковесный архиватор ( для xfce-lxqt-lxde-gnome ) 
-    
-    0 - нет : " i_zip   # sends right after the keypress
-    echo ''
-    [[ "$i_zip" =~ [^120] ]]
-do
-    :
-done
-if [[ $i_zip  == 1 ]]; then
-pacman -Sy unzip unrar  lha ark --noconfirm
-elif [[ $i_zip == 2 ]]; then
+
 pacman -Sy unzip unrar lha file-roller p7zip unace lrzip  --noconfirm  
-elif [[ $i_zip == 0 ]]; then
-echo " Установка пропущена "
-fi
-clear
-echo ""
-echo " Установка дополнительных программ ( установка всех программ по желанию )  "
-echo ""
-echo " 
->> blueman     
->> htop                
->> fiezilla 
->> gwenview               
->> steam 
->> neofetch
->> screenfetch
->> vlc
->> gparted  
->> telegram-desktop 
->> spectacle
->> flameshot"
-echo ""
-while 
-    read -n1 -p  "
-    1 - да ( буду устанавливать! )
-    
-    
-    0 - пропустить ( Установка программ произвадиться не будет! )  " i_prog # sends right after the keypress
-    echo ''
-    [[ "$i_prog" =~ [^10] ]]
-do
-    :
-done
-if [[ $i_prog == 0 ]]; then
-clear
-echo " Установка пропущена "
-elif [[ $i_prog == 1 ]]; then
-echo "#############################################################################"
-echo ""
-echo " Будете ли вы подключать Android или Iphone к ПК через USB? "
-while 
-    read -n1 -p  "
-    1 - Android 
-    
-    2 - Iphone 
-    
-    3 - оба варианта
-    
-    0 - пропустить: " i_telephone # sends right after the keypress
-    
-    echo ''
-    [[ "$i_telephone" =~ [^1230] ]]
-do
-    :
-done
-if [[ $i_telephone == 0 ]]; then
-clear
-echo " Установка пропущена "
-elif [[ $i_telephone == 1 ]]; then
-pacman -S gvfs-mtp --noconfirm
-clear
-echo " установка gvfs-mtp  завершена "
-elif [[ $i_telephone == 2 ]]; then
-pacman -S gvfs-afc --noconfirm
-clear
-echo " установка gvfs-afc  завершена "
-elif [[ $i_telephone == 3 ]]; then
-pacman -S gvfs-afc gvfs-mtp --noconfirm
-clear
-echo " установка gvfs-afc gvfs-mtp  завершена "
-fi
-echo "#############################################################################"
-echo ""
-echo " blueman --диспетчер blutooth устройств  "
-echo " "
-echo " полезно для i3 " 
-while 
-    read -n1 -p  "
-    1 - да 
-    
-    0 - нет: " i_blu # sends right after the keypress
-    echo ''
-    [[ "$i_blu" =~ [^10] ]]
-do
-    :
-done
-if [[ $i_blu == 0 ]]; then
-clear
-echo " Установка пропущена "
-elif [[ $i_blu == 1 ]]; then
-pacman -S blueman --noconfirm
-clear
-echo " установка blueman завершена "
-fi
 
-
-echo "#############################################################################"
+clear
 echo ""
-echo " htop--диспетчер задач для linux  "
-echo " "
-echo " При установке для i3 терминал xterm по умолчанию " 
-while 
-    read -n1 -p  "
-    1 - да 
-    
-    0 - нет: " i_htop # sends right after the keypress
-    echo ''
-    [[ "$i_htop" =~ [^10] ]]
-do
-    :
-done
-if [[ $i_htop == 0 ]]; then
-clear
-echo " Установка пропущена "
-elif [[ $i_htop == 1 ]]; then
-pacman -S htop xterm --noconfirm
-clear
-echo " установка htop  завершена "
-fi
-#############  filezilla ###############
-echo "#############################################################################"
-echo ""
-echo " Filezilla - графический клиент для работы с FTP/SFTP "
-while 
-    read -n1 -p  "
-    1 - да
-    
-    0 - нет: " i_filezilla    # sends right after the keypress
-    echo ''
-    [[ "$i_filezilla" =~ [^10] ]]
-do
-    :
-done
-if [[ $i_filezilla == 0 ]]; then
-clear
-echo " Установка пропущена "
-elif [[ $i_filezilla == 1 ]]; then
-pacman -S filezilla --noconfirm
-clear
-echo " Установка завершена "
-fi  
-echo "#############################################################################"
-echo ""
-echo " gwenview - программа для просмотра изображений для gnome и xfce есть собственное"
-while 
-    read -n1 -p  "
-    1 - да
-    
-    0 - нет: " i_gwenview    # sends right after the keypress
-    echo ''
-    [[ "$i_gwenview" =~ [^10] ]]
-do
-    :
-done
-if [[ $i_gwenview == 0 ]]; then
-clear
-echo " Установка пропущена "
-elif [[ $i_gwenview == 1 ]]; then
-pacman -S gwenview --noconfirm
-clear
-echo " Установка завершена "
-fi
-echo "#############################################################################"
-echo ""
-echo " Steam - магазин игр   "
-while 
-    read -n1 -p  "
-    1 - да
-    
-    0 - нет: " i_steam    # sends right after the keypress
-    echo ''
-    [[ "$i_steam" =~ [^10] ]]
-do
-    :
-done
-if [[ $i_steam == 0 ]]; then
-clear
-echo " Установка пропущена "
-elif [[ $i_steam == 1 ]]; then
-pacman -S steam steam-native-runtime --noconfirm
-clear
-echo " Установка завершена "
-fi
-echo "#############################################################################"
-echo ""
-echo " neofetch - вывод данных о системе с лого в консоли "
-while 
-    read -n1 -p  "
-    1 - да
-    
-    0 - нет: " i_neofetch     # sends right after the keypress
-    echo ''
-    [[ "$i_neofetch" =~ [^10] ]]
-do
-    :
-done
-if [[ $i_neofetch  == 0 ]]; then
-clear
-echo " Установка пропущена "
-elif [[ $i_neofetch  == 1 ]]; then
-pacman -S neofetch  --noconfirm
-clear
-echo " Установка завершена "
-fi
-echo "#############################################################################"
-echo ""
-echo " screenfetch - вывод данных о системе с лого в консоли( аналог neofetch ) "
-while 
-    read -n1 -p  "
-    1 - да
-    
-    0 - нет: " i_screenfetch     # sends right after the keypress
-    echo ''
-    [[ "$i_screenfetch" =~ [^10] ]]
-do
-    :
-done
-if [[ $i_screenfetch  == 0 ]]; then
-clear
-echo " Установка пропущена "
-elif [[ $i_screenfetch  == 1 ]]; then
-pacman -S screenfetch  --noconfirm
-clear
-echo " Установка завершена "
-fi
-echo "#############################################################################"
-echo ""
-echo " vlc - проигрыватель мультимедиа ) "
-while 
-    read -n1 -p  "
-    1 - да 
-    
-    0 - нет: " i_vlc   # sends right after the keypress
-    echo ''
-    [[ "$i_vlc" =~ [^10] ]]
-do
-    :
-done
-if [[ $i_vlc  == 0 ]]; then
-clear
-echo " Установка пропущена "
-elif [[ $i_vlc  == 1 ]]; then
-pacman -S vlc  --noconfirm
-clear
-echo " Установка завершена "
-fi
-echo "#############################################################################"
-echo ""
-echo " gparted - программа для работы с разделами sdd/hdd ) "
-while 
-    read -n1 -p  "
-    1 - да 
-    
-    0 - нет: " i_gparted   # sends right after the keypress
-    echo ''
-    [[ "$i_gparted" =~ [^10] ]]
-do
-    :
-done
-if [[ $i_gparted  == 0 ]]; then
-clear
-echo " Установка пропущена "
-elif [[ $i_gparted  == 1 ]]; then
-pacman -S gparted  --noconfirm
-clear
-echo " Установка завершена "
-fi
-echo "#############################################################################"
-echo ""
-echo " telegram - мессенджер ) "
-while 
-    read -n1 -p  "
-    1 - да
-    
-    0 - нет: " i_telegram   # sends right after the keypress
-    echo ''
-    [[ "$i_telegram" =~ [^10] ]]
-do
-    :
-done
-if [[ $i_telegram  == 0 ]]; then
-clear
-echo " Установка пропущена "
-elif [[ $i_telegram  == 1 ]]; then
-pacman -S telegram-desktop   --noconfirm
-clear
-echo " Установка завершена "
-fi
-
-echo "#############################################################################"
-echo ""
-echo " установим программу для создания скриншотов? "
-echo ""
-echo " spectacle(интегрируется в рабочий стол  Plasma(kde)) и flameshot(универсальна, хорошо работает в KDE и Xfce) "
-while 
-    read -n1 -p  "
-    1 - spectacle
-    
-    2 -flameshot 
-    
-    3 - оба варианта   
-    
-    0 - пропустить: " i_screen   # sends right after the keypress
-    echo ''
-    [[ "$i_screen" =~ [^1230] ]]
-do
-    :
-done
-if [[ $i_screen == 0 ]]; then
-clear
-echo " Установка пропущена "
-elif [[ $i_screen == 1 ]]; then
-pacman -S spectacle   --noconfirm
-clear
-echo " Установка завершена "
-elif [[ $i_screen == 2 ]]; then
-pacman -S flameshot --noconfirm
-clear
-echo " Установка завершена "
-elif [[ $i_screen == 3 ]]; then
-pacman -S spectacle flameshot --noconfirm
-clear
-echo " установка завершена "
-fi
-fi
 ###############################################################################
 pacman -S  git ttf-liberation ttf-dejavu htop neofetch --noconfirm
 clear
-echo "################################################################"
-echo ""
-echo " Установим браузер? : "
-while 
-    read -n1 -p  "
-    1 - google-chrome 
-    
-    2 - firefox 
-    
-    3 - chromium
-    
-    4 - opera ( + pepper-flash )
-    
-    5 - установить все
-    
-    0 - пропустить: " g_chrome # sends right after the keypress
-    echo ''
-    [[ "$g_chrome" =~ [^123450] ]]
-do
-    :
-done
-if [[ $g_chrome == 0 ]]; then
-  echo ' установка браузера пропущена после установки системы вы сможете установить браузер на свой усмотрение!!!!' 
-elif [[ $g_chrome == 1 ]]; then
+
 cd /home/$username   
 git clone https://aur.archlinux.org/google-chrome.git
 chown -R $username:users /home/$username/google-chrome 
@@ -1026,57 +513,7 @@ cd /home/$username/google-chrome
 sudo -u $username  makepkg -si --noconfirm  
 rm -Rf /home/$username/google-chrome
 clear
-elif [[ $g_chrome == 2 ]]; then
-pacman -S firefox firefox-i18n-ru --noconfirm 
-clear
-elif [[ $g_chrome == 3 ]]; then
-pacman -S chromium --noconfirm 
-elif [[ $g_chrome == 4 ]]; then
-pacman -S opera pepper-flash --noconfirm 
-elif [[ $g_chrome == 5 ]]; then
-pacman -S chromium opera pepper-flash firefox firefox-developer-edition-i18n-ru --noconfirm 
-cd /home/$username   
-git clone https://aur.archlinux.org/google-chrome.git
-chown -R $username:users /home/$username/google-chrome 
-chown -R $username:users /home/$username/google-chrome/PKGBUILD 
-cd /home/$username/google-chrome  
-sudo -u $username  makepkg -si --noconfirm  
-rm -Rf /home/$username/google-chrome
-clear
-fi
-#############################################################################
-echo ""
-echo "##################################################################################"
-echo "###################   <<<< установка программ из AUR >>>    ######################"
-echo "##################################################################################"
-echo ""
-echo "    каждую из программ можно будет пропустить! "
-echo ""
-###########################################################################
-echo " Установим  aur-helper ( pikaur-(идет как зависимость для octopi) или yay ) ?  "
-while 
-    read -n1 -p  "
-    1 - pikaur
-    
-    2 - yay 
-    
-    0 - пропустить : " in_aur_help # sends right after the keypress
-    echo ''
-    [[ "$in_aur_help" =~ [^120] ]]
-do
-    :
-done
-if [[ $in_aur_help == 0 ]]; then
-  echo ' установка  пропущена' 
-elif [[ $in_aur_help == 1 ]]; then
-cd /home/$username
-git clone https://aur.archlinux.org/pikaur.git
-chown -R $username:users /home/$username/pikaur   
-chown -R $username:users /home/$username/pikaur/PKGBUILD 
-cd /home/$username/pikaur   
-sudo -u $username  makepkg -si --noconfirm  
-rm -Rf /home/$username/pikaur
-elif [[ $in_aur_help == 2 ]]; then
+
 cd /home/$username
 git clone https://aur.archlinux.org/yay.git
 chown -R $username:users /home/$username/yay
@@ -1085,137 +522,8 @@ cd /home/$username/yay
 sudo -u $username  makepkg -si --noconfirm  
 rm -Rf /home/$username/yay
 clear
-fi
-echo "################################################################"
-echo ""
-echo " Установим teamviewer для удаленного доступа ? : "
-while 
-    read -n1 -p  "
-    1 - да
-    
-    0 - нет: " t_teamviewer # sends right after the keypress
-    echo ''
-    [[ "$t_teamviewer" =~ [^10] ]]
-do
-    :
-done
-if [[ $t_teamviewer == 0 ]]; then
-  echo 'уcтановка  пропущена' 
-elif [[ $t_teamviewer == 1 ]]; then
-cd /home/$username 
-git clone https://aur.archlinux.org/teamviewer.git
-chown -R $username:users /home/$username/teamviewer
-chown -R $username:users /home/$username/teamviewer/PKGBUILD 
-cd /home/$username/teamviewer  
-sudo -u $username  makepkg -si --noconfirm  
-rm -Rf /home/$username/teamviewer
-systemctl enable teamviewerd.service
-clear
-fi
-echo "################################################################"
-echo ""
-echo " Установим vk-messenger ? : "
-while 
-    read -n1 -p  "
-    1 - да,
-    
-    0 - нет: " t_vk # sends right after the keypress
-    echo ''
-    [[ "$t_vk" =~ [^10] ]]
-do
-    :
-done
-if [[ $t_vk == 0 ]]; then
-  echo 'уcтановка  пропущена' 
-elif [[ $t_vk == 1 ]]; then
-cd /home/$username
-git clone https://aur.archlinux.org/gconf.git 
-chown -R $username:users /home/$username/gconf
-chown -R $username:users /home/$username/gconf/PKGBUILD 
-cd /home/$username/gconf  
-sudo -u $username  makepkg -si --noconfirm  
-rm -Rf /home/$username/gconf
-###
-cd /home/$username
-git clone https://aur.archlinux.org/vk-messenger.git
-chown -R $username:users /home/$username/vk-messenger
-chown -R $username:users /home/$username/vk-messenger/PKGBUILD 
-cd /home/$username/vk-messenger  
-sudo -u $username  makepkg -si --noconfirm  
-rm -Rf /home/$username/vk-messenger
-#####
-clear
-fi
 
-echo "################################################################"
-echo ""
-echo " Установим woeusb (Программа для записи Windows.iso на USB-накопитель)  ? : "
-while 
-    read -n1 -p  "
-    1 - да
-    
-    0 - нет: " t_woeusb # sends right after the keypress
-    echo ''
-    [[ "$t_woeusb" =~ [^10] ]]
-do
-    :
-done
-if [[ $t_woeusb == 0 ]]; then
-clear
-  echo 'уcтановка  пропущена' 
-elif [[ $t_woeusb == 1 ]]; then
-cd /home/$username 
-git clone https://aur.archlinux.org/woeusb.git
-chown -R $username:users /home/$username/woeusb
-chown -R $username:users /home/$username/woeusb/PKGBUILD 
-cd /home/$username/woeusb  
-sudo -u $username  makepkg -si --noconfirm  
-rm -Rf /home/$username/woeusb
-clear
-fi
-echo "################################################################"
-echo ""
-echo " Установим alsi (альтернатива neofetch и screenfetch)  ? : "
-while 
-    read -n1 -p  "
-    1 - да
-    
-    0 - нет: " t_alsi # sends right after the keypress
-    echo ''
-    [[ "$t_alsi" =~ [^10] ]]
-do
-    :
-done
-if [[ $t_alsi == 0 ]]; then
-clear
-  echo 'уcтановка  пропущена' 
-elif [[ $t_alsi == 1 ]]; then
-cd /home/$username
-git clone https://aur.archlinux.org/alsi.git
-chown -R $username:users /home/$username/alsi
-chown -R $username:users /home/$username/alsi/PKGBUILD 
-cd /home/$username/alsi  
-sudo -u $username  makepkg -si --noconfirm  
-rm -Rf /home/$username/alsi
-clear
-fi
-echo "################################################################"
-echo ""
-echo " Установим inxi ( подробная информация о системе )  ? : "
-while 
-    read -n1 -p  "
-    1 - да
-    
-    0 - нет: " t_inxi # sends right after the keypress
-    echo ''
-    [[ "$t_inxi" =~ [^10] ]]
-do
-    :
-done
-if [[ $t_inxi == 0 ]]; then
-clear
-  echo 'уcтановка  пропущена' 
-elif [[ $t_inxi == 1 ]]; then
+
 cd /home/$username 
 git clone https://aur.archlinux.org/inxi.git
 chown -R $username:users /home/$username/inxi
@@ -1224,113 +532,7 @@ cd /home/$username/inxi
 sudo -u $username  makepkg -si --noconfirm  
 rm -Rf /home/$username/inxi
 clear
-fi
-echo "################################################################"
-echo ""
-echo " Установим графический менеджер пакетов для Archlinux ? : "
-while 
-    read -n1 -p  "
-    1 - octopi 
-    
-    2 - pamac-aur
-    
-    0 - пропустить : " t_aur # sends right after the keypress
-    echo ''
-    [[ "$t_aur" =~ [^120] ]]
-do
-    :
-done
-if [[ $t_aur == 0 ]]; then
-  echo 'уcтановка  пропущена' 
-elif [[ $t_aur == 1 ]]; then
-echo " Был ли выбран ранее pikaur ? : "
-while 
-    read -n1 -p  "
-    1 - да
-    
-    0 - нет: " t_picaur # sends right after the keypress
-    echo ''
-    [[ "$t_picaur" =~ [^10] ]]
-do
-    :
-done
-if [[ $t_picaur == 0 ]]; then
-cd /home/$username
-git clone https://aur.archlinux.org/pikaur.git
-chown -R $username:users /home/$username/pikaur   
-chown -R $username:users /home/$username/pikaur/PKGBUILD 
-cd /home/$username/pikaur   
-sudo -u $username  makepkg -si --noconfirm  
-rm -Rf /home/$username/pikaur
-#####
-cd /home/$username
-git clone https://aur.archlinux.org/alpm_octopi_utils.git
-chown -R $username:users /home/$username/alpm_octopi_utils
-chown -R $username:users /home/$username/alpm_octopi_utils/PKGBUILD 
-cd /home/$username/alpm_octopi_utils
-sudo -u $username  makepkg -si --noconfirm  
-rm -Rf /home/$username/alpm_octopi_utils
-################
-cd /home/$username
-git clone https://aur.archlinux.org/octopi.git
-chown -R $username:users /home/$username/octopi
-chown -R $username:users /home/$username/octopi/PKGBUILD 
-cd /home/$username/octopi
-sudo -u $username  makepkg -si --noconfirm  
-rm -Rf /home/$username/octopi
-######################
-cd /home/$username
-git clone https://aur.archlinux.org/libgksu.git
-chown -R $username:users /home/$username/libgksu
-chown -R $username:users /home/$username/libgksu/PKGBUILD 
-cd /home/$username/libgksu
-sudo -u $username  makepkg -si --noconfirm  
-rm -Rf /home/$username/libgksu
-######################
-git clone https://aur.archlinux.org/gksu.git
-chown -R $username:users /home/$username/gksu
-chown -R $username:users /home/$username/gksu/PKGBUILD 
-cd /home/$username/gksu
-sudo -u $username  makepkg -si --noconfirm  
-rm -Rf /home/$username/gksu
-echo " Octopi успешно установлен "
-elif [[ $t_picaur == 1 ]]; then
-cd /home/$username
-git clone https://aur.archlinux.org/alpm_octopi_utils.git
-chown -R $username:users /home/$username/alpm_octopi_utils
-chown -R $username:users /home/$username/alpm_octopi_utils/PKGBUILD 
-cd /home/$username/alpm_octopi_utils
-sudo -u $username  makepkg -si --noconfirm  
-rm -Rf /home/$username/alpm_octopi_utils
-################
-cd /home/$username
-git clone https://aur.archlinux.org/libgksu.git
-chown -R $username:users /home/$username/libgksu
-chown -R $username:users /home/$username/libgksu/PKGBUILD 
-cd /home/$username/libgksu
-sudo -u $username  makepkg -si --noconfirm  
-rm -Rf /home/$username/libgksu
-################
-cd /home/$username
-git clone https://aur.archlinux.org/gksu.git
-chown -R $username:users /home/$username/gksu
-chown -R $username:users /home/$username/gksu/PKGBUILD 
-cd /home/$username/gksu
-sudo -u $username  makepkg -si --noconfirm  
-rm -Rf /home/$username/gksu
-#####
-cd /home/$username
-git clone https://aur.archlinux.org/octopi.git
-chown -R $username:users /home/$username/octopi
-chown -R $username:users /home/$username/octopi/PKGBUILD 
-cd /home/$username/octopi
-sudo -u $username  makepkg -si --noconfirm  
-rm -Rf /home/$username/octopi
-clear
-echo " Octopi успешно установлен "
-fi
 
-elif [[ $t_aur == 2 ]]; then
 cd /home/$username
  git clone https://aur.archlinux.org/pamac-aur.git
 chown -R $username:users /home/$username/pamac-aur
@@ -1339,14 +541,6 @@ cd /home/$username/pamac-aur
 sudo -u $username  makepkg -si --noconfirm  
 rm -Rf /home/$username/pamac-aur
 clear
-echo " Pamac-aur успешно установлен! "
-fi 
-echo "####################   Установка пакетов завершена   ############################################"
-echo ""
-echo "
-Данный этап поможет исключить возможные ошибки при первом запуске системы 
-
-Фаил откроется через редактор  !nano!"
 echo ""
 echo " Просмотрим//отредактируем /etc/fstab ?"
 while 
@@ -1362,25 +556,6 @@ elif [[ $vm_fstab == 1 ]]; then
 nano /etc/fstab
 fi 
 clear
-echo "################################################################"
-echo ""
-echo "Создаем папки музыка, видео и т.д. в директории пользователя?"
-while 
-    read -n1 -p  "1 - да, 0 - нет: " vm_text # sends right after the keypress
-    echo ''
-    [[ "$vm_text" =~ [^10] ]]
-do
-    :
-done
-if [[ $vm_text == 0 ]]; then
-  echo 'этап пропущен'  
- exit
-elif [[ $vm_text == 1 ]]; then
-  mkdir /home/$username/{Downloads,Music,Pictures,Videos,Documents,time}   
-  chown -R $username:users  /home/$username/{Downloads,Music,Pictures,Videos,Documents,time}
-exit
-fi  
-clear 
 echo " Установка завершена для выхода введите >> exit << "
 exit
 exit
