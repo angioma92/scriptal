@@ -5,9 +5,9 @@ clear
 read -p "Введите имя пользователя: " username
 clear
 echo $hostname > /etc/hostname
-echo 127.0.0.1 localhost > /etc/hosts
-echo ::1 localhost >> /etc/hosts
-echo 127.0.1.1 $hostname.localdomain $hostname >> /etc/hosts
+echo 127.0.0.1    localhost >> /etc/hosts
+echo ::1          localhost >> /etc/hosts
+echo 127.0.1.1    $hostname.localdomain    $hostname >> /etc/hosts
 clear
 ln -sf /usr/share/zoneinfo/Asia/Irkutsk /etc/localtime
 echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
@@ -29,17 +29,17 @@ clear
 echo '%wheel ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
 
 bootctl install 
-echo ' default arch ' > /boot/loader/loader.conf
-echo 'title   ARCH LINUX' > /boot/loader/entries/arch.conf
-echo "linux  /vmlinuz-linux" >> /boot/loader/entries/arch.conf
+echo 'default arch ' > /boot/loader/loader.conf
+echo 'title    ARCH LINUX' > /boot/loader/entries/arch.conf
+echo "linux    /vmlinuz-linux" >> /boot/loader/entries/arch.conf
 pacman -S amd-ucode --noconfirm
-echo  'initrd /amd-ucode.img ' >> /boot/loader/entries/arch.conf
-echo "initrd  /initramfs-linux.img" >> /boot/loader/entries/arch.conf
+echo  'initrd    /amd-ucode.img ' >> /boot/loader/entries/arch.conf
+echo "initrd    /initramfs-linux.img" >> /boot/loader/entries/arch.conf
 clear
 
 read -p "Укажите ROOT раздел для загрузчика (например: sda2): " root
 Proot=$(blkid -s PARTUUID /dev/$root | grep -oP '(?<=PARTUUID=").+?(?=")')
-echo options root=PARTUUID=$Proot rw quiet splash mitigations=off amdgpu.ppfeaturemask=0xffffffff >> /boot/loader/entries/arch.conf
+echo options    root=PARTUUID=$Proot rw quiet splash mitigations=off amdgpu.ppfeaturemask=0xffffffff >> /boot/loader/entries/arch.conf
 
 cd /home/$username 
 git clone https://aur.archlinux.org/systemd-boot-pacman-hook.git
@@ -99,8 +99,8 @@ sudo -u $username  makepkg -si --noconfirm
 rm -Rf /home/$username/pamac-aur
 
 pacman -S ufw --noconfirm
-systemctl enable ufw
 ufw enable
+systemctl enable ufw
 
 pacman -S lib32-mesa vulkan-radeon lib32-vulkan-radeon vulkan-icd-loader lib32-vulkan-icd-loader --noconfirm
 
@@ -108,7 +108,7 @@ pacman -S wine-staging giflib lib32-giflib libpng lib32-libpng libldap lib32-lib
 
 pacman -Syu cabextract cups faudio lib32-acl lib32-faudio lib32-fontconfig lib32-freetype2 lib32-gettext lib32-giflib lib32-gnutls lib32-gst-plugins-base-libs lib32-gtk3 lib32-harfbuzz lib32-lcms2 lib32-libjpeg-turbo lib32-libldap lib32-libnl lib32-libpcap lib32-libpng lib32-libtasn1 lib32-libtiff lib32-libusb lib32-libxcomposite lib32-libxinerama lib32-libxrandr lib32-libxslt lib32-libxss lib32-mpg123 lib32-nspr lib32-nss lib32-opencl-icd-loader lib32-p11-kit lib32-sqlite lib32-v4l-utils lib32-vkd3d lib32-vulkan-icd-loader libimagequant lsof opencl-icd-loader python-distro python-evdev python-pillow sane vkd3d zenity icoutils xterm wget curl libudev0-shim python2 wxgtk-common wxgtk3 gnu-netcat lib32-libudev0-shim lib32-vulkan-intel lib32-vulkan-radeon python2-wxpython3 vulkan-intel vulkan-tools gamemode vulkan-radeon winetricks --noconfirm
 
-pacman -Rsu totem evince eog baobab epiphany gnome-documents gnome-maps gnome-books gnome-contacts gnome-music cups gnome-photos gnome-software gnome-boxes wpa_supplicant --noconfirm
+pacman -Rsu totem sushi evince eog baobab epiphany gnome-documents gnome-maps gnome-books gnome-contacts gnome-music gnome-photos gnome-software gnome-boxes wpa_supplicant --noconfirm
 
 clear
 exit
