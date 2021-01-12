@@ -85,13 +85,7 @@ elif [[ $x_de == 0 ]]; then
   chown $username:wheel /home/$username/.xinitrc
   chmod +x /home/$username/.xinitrc
   sed -i 52,55d /home/$username/.xinitrc
-  echo "exec openbox-session" >> /home/$username/.xinitrc
-  mkdir /etc/systemd/system/getty@tty1.service.d/
-  echo '[Service]
-  ExecStart=
-  ExecStart=-/usr/bin/agetty --autologin $username --noclear %I 38400 linux' > /etc/systemd/system/getty@tty1.service.d/override.conf
-  echo ' [[ -z $DISPLAY && $XDG_VTNR -eq 1 ]] && exec startx ' >> /etc/profile
-  
+  echo "exec openbox-session" >> /home/$username/.
   mkdir -p /home/$username/.config/openbox
   cp -a /etc/xdg/openbox/ /home/$username/.config/
   chown -R $username:wheel /home/$username/.config/openbox
