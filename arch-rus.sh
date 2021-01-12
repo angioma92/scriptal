@@ -37,7 +37,10 @@ read -p "Укажите BOOT раздел (например: sda1):" bootd
 mkfs.fat -F32 /dev/$bootd
 mkdir /mnt/boot
 mount /dev/$bootd /mnt/boot
-clear 
+clear
+echo 'Server = http://mirror.yandex.ru/archlinux/$repo/os/$arch' | cat - /etc/pacman.d/mirrorlist > temp && mv temp /etc/pacman.d/mirrorlist
+echo 'Server = https://mirror.yandex.ru/archlinux/$repo/os/$arch' | cat - /etc/pacman.d/mirrorlist > temp && mv temp /etc/pacman.d/mirrorlist
+pacman -Sy --noconfirm
 pacstrap /mnt base base-devel linux linux-headers linux-firmware dhcpcd wget nano  efibootmgr  
 genfstab -U /mnt >> /mnt/etc/fstab
 clear
