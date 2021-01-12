@@ -67,7 +67,7 @@ while
     read -n1 -p  "
     1 - Gnome
     
-    0 - Openbox
+    0 - Openbox x_de
     [[ "$x_de" =~ [^10] ]]
 do
     :
