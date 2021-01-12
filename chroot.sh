@@ -114,5 +114,17 @@ pacman -Syu cabextract cups faudio lib32-acl lib32-faudio lib32-fontconfig lib32
 
 pacman -Rsu totem sushi evince eog baobab epiphany gnome-documents gnome-maps gnome-books gnome-contacts gnome-music gnome-photos gnome-software gnome-boxes wpa_supplicant --noconfirm
 
+echo 'zram' > /etc/modules-load.d/zram.conf
+echo 'options zram num_devices=4' > /etc/modprobe.d/zram.conf
+echo 'KERNEL=="zram0", ATTR{disksize}="1024Mb" RUN="/usr/bin/mkswap /dev/zram0", TAG+="systemd"' > /etc/udev/rules.d/99-zram.rules
+echo 'KERNEL=="zram1", ATTR{disksize}="1024Mb" RUN="/usr/bin/mkswap /dev/zram1", TAG+="systemd"' >> /etc/udev/rules.d/99-zram.rules
+echo 'KERNEL=="zram2", ATTR{disksize}="1024Mb" RUN="/usr/bin/mkswap /dev/zram2", TAG+="systemd"' >> /etc/udev/rules.d/99-zram.rules
+echo 'KERNEL=="zram3", ATTR{disksize}="1024Mb" RUN="/usr/bin/mkswap /dev/zram3", TAG+="systemd"' >> /etc/udev/rules.d/99-zram.rules
+echo '/dev/zram0 none swap defaults 0 0' >> /etc/fstab
+echo '/dev/zram1 none swap defaults 0 0' >> /etc/fstab
+echo '/dev/zram2 none swap defaults 0 0' >> /etc/fstab
+echo '/dev/zram3 none swap defaults 0 0' >> /etc/fstab
+echo "vm.swappiness=20" > /etc/sysctl.d/swap.conf
+
 clear
 exit
