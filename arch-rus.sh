@@ -42,7 +42,6 @@ mount /dev/$bootd /mnt/boot
 clear
 elif [[ $cfdisk == n ]]; then
   clear 
-fi
 lsblk
 echo ''
 read -p "                 Укажите ROOT раздел (например: sda2):" root
@@ -56,7 +55,7 @@ mkfs.fat -F32 /dev/$bootd
 mkdir /mnt/boot
 mount /dev/$bootd /mnt/boot
 clear
-
+fi 
 echo 'Server = https://mirror.yandex.ru/archlinux/$repo/os/$arch
 Server = https://mirror.truenetwork.ru/archlinux/$repo/os/$arch
 Server = http://mirror.yandex.ru/archlinux/$repo/os/$arch
