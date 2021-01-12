@@ -67,17 +67,16 @@ while
     1 - Gnome
     
     0 - Openbox
-    echo ''
     [[ "$x_de" =~ [^10] ]]
 do
     :
 done 
-if [[ $x_de == 1 ]]; then
+ if [[ $x_de == 1 ]]; then
   pacman -S gnome gnome-tweaks chrome-gnome-shell --noconfirm
   pacman -Rsu totem eog baobab epiphany gnome-documents gnome-maps gnome-books gnome-contacts gnome-music gnome-photos gnome-software gnome-boxes --noconfirm
   pacman -S gdm --noconfirm
   systemctl enable gdm.service -f
-clear
+ clear
 elif [[ $x_de == 0 ]]; then
   pacman -S xorg-xinit openbox obconf lxappearance lxappearance-obconf volumeicon leafpad lxterminal nitrogen tint2 pcmanfm --noconfirm
   cp /etc/X11/xinit/xinitrc /home/$username/.xinitrc
