@@ -9,7 +9,7 @@ timedatectl set-ntp true
 loadkeys ru
 setfont ter-k24n
 clear
-echo 'Разметка диска'
+echo '                    Разметка диска'
 echo ''
 while 
   read -n1 -p  "
@@ -24,7 +24,7 @@ done
   clear
   lsblk
   echo ''
-  read -p "Укажите диск (например: sda) : " cfd
+  read -p "               Укажите диск (например: sda) : " cfd
 cfdisk /dev/$cfd
 clear
 elif [[ $cfdisk == n ]]; then
@@ -32,13 +32,13 @@ elif [[ $cfdisk == n ]]; then
 fi
 lsblk
 echo ''
-read -p "Укажите ROOT раздел (например: sda2):" root
+read -p "                 Укажите ROOT раздел (например: sda2):" root
 mkfs.ext4 /dev/$root
 mount /dev/$root /mnt
 clear
 lsblk
 echo ''
-read -p "Укажите BOOT раздел (например: sda1):" bootd
+read -p "                 Укажите BOOT раздел (например: sda1):" bootd
 mkfs.fat -F32 /dev/$bootd
 mkdir /mnt/boot
 mount /dev/$bootd /mnt/boot
