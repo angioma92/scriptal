@@ -10,9 +10,11 @@ loadkeys ru
 setfont ter-k24n
 clear
 echo 'Разметка диска'
+echo ''
 while 
   read -n1 -p  "
   y - да
+  
   n - нет: " cfdisk
     [[ "$cfdisk" =~ [^yn] ]]
 do
@@ -21,6 +23,7 @@ done
   if [[ $cfdisk == y ]]; then
   clear
   lsblk
+  echo ''
   read -p "Укажите диск (например: sda) : " cfd
 cfdisk /dev/$cfd
 clear
@@ -28,11 +31,13 @@ elif [[ $cfdisk == n ]]; then
   clear 
 fi
 lsblk
+echo ''
 read -p "Укажите ROOT раздел (например: sda2):" root
 mkfs.ext4 /dev/$root
 mount /dev/$root /mnt
 clear
 lsblk
+echo ''
 read -p "Укажите BOOT раздел (например: sda1):" bootd
 mkfs.fat -F32 /dev/$bootd
 mkdir /mnt/boot
