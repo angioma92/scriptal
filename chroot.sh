@@ -141,7 +141,7 @@ echo '});' >> /etc/polkit-1/rules.d/90-corectrl.rules
 
 
 echo 'UUID=12bf5ca9-9742-4868-9907-cff73d83ee37 /home/nik/250GB ext4 auto,users,rw 0 0' >> /etc/fstab
-echo 'UUID=70663DBE663D863E /home/nik/250GB ntfs auto,users,rw 0 0' >> /etc/fstab
+echo 'UUID=70663DBE663D863E /home/nik/500GB ntfs auto,users,rw 0 0' >> /etc/fstab
 
 echo 'zram' > /etc/modules-load.d/zram.conf
 echo 'options zram num_devices=4' > /etc/modprobe.d/zram.conf
