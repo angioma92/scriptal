@@ -62,6 +62,7 @@ Include = /etc/pacman.d/mirrorlist' >> /etc/pacman.conf
 
 pacman -Syy
 pacman -S xorg-server xorg-drivers xorg-apps mesa-demos --noconfirm
+echo ''
 while 
     read -n1 -p  "
     1 - Gnome
