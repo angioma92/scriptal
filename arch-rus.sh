@@ -27,6 +27,19 @@ done
   read -p "               Укажите диск (например: sda) : " cfd
 cfdisk /dev/$cfd
 clear
+lsblk
+echo ''
+read -p "                 Укажите ROOT раздел (например: sda2):" root
+mkfs.ext4 /dev/$root
+mount /dev/$root /mnt
+clear
+lsblk
+echo ''
+read -p "                 Укажите BOOT раздел (например: sda1):" bootd
+mkfs.fat -F32 /dev/$bootd
+mkdir /mnt/boot
+mount /dev/$bootd /mnt/boot
+clear
 elif [[ $cfdisk == n ]]; then
   clear 
 fi
