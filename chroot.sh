@@ -1,7 +1,9 @@
  
 #!/bin/bash
+echo ''
 read -p "Введите имя компьютера: " hostname
 clear 
+echo ''
 read -p "Введите имя пользователя: " username
 clear
 echo $hostname > /etc/hostname
@@ -17,11 +19,13 @@ echo 'LANG=ru_RU.UTF-8' > /etc/locale.conf
 echo "KEYMAP=ru" > /etc/vconsole.conf
 echo "FONT=ter-k24n" >> /etc/vconsole.conf
 clear
+echo ''
 echo " Укажите пароль для ROOT "
 passwd
 
 useradd -m -G wheel,audio,video,storage,power -s /bin/bash $username
 clear
+echo ''
 echo 'Укажите пароль для пользователя '$username' '
 passwd $username
 clear
@@ -36,7 +40,7 @@ pacman -S amd-ucode --noconfirm
 echo  'initrd    /amd-ucode.img ' >> /boot/loader/entries/arch.conf
 echo "initrd    /initramfs-linux.img" >> /boot/loader/entries/arch.conf
 clear
-
+echo ''
 read -p "Укажите ROOT раздел для загрузчика (например: sda2): " root
 Proot=$(blkid -s PARTUUID /dev/$root | grep -oP '(?<=PARTUUID=").+?(?=")')
 echo options    root=PARTUUID=$Proot rw quiet splash mitigations=off amdgpu.ppfeaturemask=0xffffffff >> /boot/loader/entries/arch.conf
