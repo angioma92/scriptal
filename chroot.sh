@@ -159,5 +159,6 @@ echo "vm.dirty_background_ratio = 50" >> /etc/sysctl.conf
 echo "vm.dirty_ratio = 80" >> /etc/sysctl.conf
 systemctl enable ufw
 systemctl disable avahi-daemon
+mkinitcpio -p linux
 clear
 exit
