@@ -43,7 +43,7 @@ clear
 echo ''
 read -p "                 ROOT раздел для загрузчика (например: sda2): " root
 Proot=$(blkid -s PARTUUID /dev/$root | grep -oP '(?<=PARTUUID=").+?(?=")')
-echo options    root=PARTUUID=$Proot rw quiet splash mitigations=off amdgpu.ppfeaturemask=0xffffffff >> /boot/loader/entries/arch.conf
+echo options    root=PARTUUID=$Proot rw quiet splash loglevel=3 rd.udev.log_priority=3 vt.global_cursor_default=0 radeon.modeset=1 mitigations=off amdgpu.ppfeaturemask=0xffffffff >> /boot/loader/entries/arch.conf
 
 cd /home/$username 
 git clone https://aur.archlinux.org/systemd-boot-pacman-hook.git
