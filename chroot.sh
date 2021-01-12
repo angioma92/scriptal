@@ -102,6 +102,12 @@ cd /home/$username/pamac-aur
 sudo -u $username  makepkg -si --noconfirm  
 rm -Rf /home/$username/pamac-aur
 
+cd /home/$username
+wget https://mirror.yandex.ru/mirrors/manjaro/testing/community/x86_64/corectrl-1.1.1-5-x86_64.pkg.tar.zst
+chown -R $username:users /home/$username/corectrl-1.1.1-5-x86_64.pkg.tar.zst
+sudo -u $username pacman -U corectrl-1.1.1-5-x86_64.pkg.tar.zst
+rm /home/$username/corectrl-1.1.1-5-x86_64.pkg.tar.zst
+
 pacman -S ufw --noconfirm
 ufw enable
 systemctl enable ufw
