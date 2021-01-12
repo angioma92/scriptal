@@ -50,8 +50,7 @@ echo options    root=PARTUUID=$Proot rw quiet splash loglevel=3 rd.udev.log_prio
 
 cd /home/$username 
 git clone https://aur.archlinux.org/systemd-boot-pacman-hook.git
-chown -R $username:users /home/$username/systemd-boot-pacman-hook   
-chown -R $username:users /home/$username/systemd-boot-pacman-hook/PKGBUILD 
+chown -R $username:wheel /home/$username/systemd-boot-pacman-hook   
 cd /home/$username/systemd-boot-pacman-hook   
 sudo -u $username makepkg -si --noconfirm  
 rm -Rf /home/$username/systemd-boot-pacman-hook
@@ -67,9 +66,9 @@ while
     read -n1 -p  "
     1 - Gnome
     
-    2 - Openbox
+    0 - Openbox
     echo ''
-    [[ "$x_de" =~ [^12] ]]
+    [[ "$x_de" =~ [^10] ]]
 do
     :
 done 
@@ -79,10 +78,10 @@ if [[ $x_de == 1 ]]; then
   pacman -S gdm --noconfirm
   systemctl enable gdm.service -f
 clear
-elif [[ $x_de == 2 ]]; then
+elif [[ $x_de == 0 ]]; then
   pacman -S xorg-xinit openbox obconf lxappearance lxappearance-obconf volumeicon leafpad lxterminal nitrogen tint2 pcmanfm --noconfirm
   cp /etc/X11/xinit/xinitrc /home/$username/.xinitrc
-  chown $username:users /home/$username/.xinitrc
+  chown $username:wheel /home/$username/.xinitrc
   chmod +x /home/$username/.xinitrc
   sed -i 52,55d /home/$username/.xinitrc
   echo "exec openbox-session" >> /home/$username/.xinitrc
@@ -94,11 +93,8 @@ elif [[ $x_de == 2 ]]; then
   
   mkdir -p /home/$username/.config/openbox
   cp -a /etc/xdg/openbox/ /home/$username/.config/
-  chown -R $username:users /home/$username/.config/openbox
-  chown -R $username:users /home/$username/.config/openbox/autostart
-  chown -R $username:users /home/$username/.config/openbox/enviroment
-  chown -R $username:users /home/$username/.config/openbox/menu.xml
-  chown -R $username:users /home/$username/.config/openbox/rc.xml
+  chown -R $username:wheel /home/$username/.config/openbox
+  
 #######################  
 ###### autostart ###### 
 #######################
@@ -212,8 +208,7 @@ clear
 echo '################## Google Chrome ##################'
 cd /home/$username   
 git clone https://aur.archlinux.org/google-chrome.git
-chown -R $username:users /home/$username/google-chrome 
-chown -R $username:users /home/$username/google-chrome/PKGBUILD 
+chown -R $username:wheel /home/$username/google-chrome 
 cd /home/$username/google-chrome  
 sudo -u $username  makepkg -si --noconfirm  
 rm -Rf /home/$username/google-chrome
@@ -222,8 +217,7 @@ clear
 echo '################## INXI ##################'
 cd /home/$username 
 git clone https://aur.archlinux.org/inxi.git
-chown -R $username:users /home/$username/inxi
-chown -R $username:users /home/$username/inxi/PKGBUILD 
+chown -R $username:wheel /home/$username/inxi
 cd /home/$username/inxi  
 sudo -u $username  makepkg -si --noconfirm  
 rm -Rf /home/$username/inxi
@@ -232,8 +226,7 @@ clear
 echo '################## AUR ##################'
 cd /home/$username
 git clone https://aur.archlinux.org/yay.git
-chown -R $username:users /home/$username/yay
-chown -R $username:users /home/$username/yay/PKGBUILD 
+chown -R $username:wheel /home/$username/yay
 cd /home/$username/yay  
 sudo -u $username  makepkg -si --noconfirm  
 rm -Rf /home/$username/yay
@@ -242,8 +235,7 @@ clear
 echo '################## Pamac AUR ##################'
 cd /home/$username
  git clone https://aur.archlinux.org/pamac-aur.git
-chown -R $username:users /home/$username/pamac-aur
-chown -R $username:users /home/$username/pamac-aur/PKGBUILD 
+chown -R $username:wheel /home/$username/pamac-aur
 cd /home/$username/pamac-aur
 sudo -u $username  makepkg -si --noconfirm  
 rm -Rf /home/$username/pamac-aur
@@ -252,7 +244,7 @@ clear
 echo '################## Corectrl ##################'
 cd /home/$username
 wget https://mirror.yandex.ru/mirrors/manjaro/testing/community/x86_64/corectrl-1.1.1-5-x86_64.pkg.tar.zst
-chown -R $username:users /home/$username/corectrl-1.1.1-5-x86_64.pkg.tar.zst
+chown -R $username:wheel /home/$username/corectrl-1.1.1-5-x86_64.pkg.tar.zst
 sudo pacman -U corectrl-1.1.1-5-x86_64.pkg.tar.zst --noconfirm
 rm /home/$username/corectrl-1.1.1-5-x86_64.pkg.tar.zst
 clear
