@@ -56,12 +56,14 @@ mkfs.fat -F32 /dev/$bootd
 mkdir /mnt/boot
 mount /dev/$bootd /mnt/boot
 clear
-echo 'Server = https://mirror.yandex.ru/archlinux/$repo/os/$arch' > /etc/pacman.d/mirrorlist
-echo 'Server = https://mirror.truenetwork.ru/archlinux/$repo/os/$arch' >> /etc/pacman.d/mirrorlist
-echo 'Server = http://mirror.yandex.ru/archlinux/$repo/os/$arch' >> /etc/pacman.d/mirrorlist
-echo 'Server = http://mirror.truenetwork.ru/archlinux/$repo/os/$arch' >> /etc/pacman.d/mirrorlist
+
+echo 'Server = https://mirror.yandex.ru/archlinux/$repo/os/$arch
+Server = https://mirror.truenetwork.ru/archlinux/$repo/os/$arch
+Server = http://mirror.yandex.ru/archlinux/$repo/os/$arch
+Server = http://mirror.truenetwork.ru/archlinux/$repo/os/$arch' > /etc/pacman.d/mirrorlist
+
 pacman -Sy --noconfirm
-pacstrap /mnt base base-devel linux linux-headers linux-firmware dhcpcd wget which git terminus-font nano efibootmgr  
+pacstrap /mnt base base-devel linux linux-headers linux-firmware wget which git terminus-font nano efibootmgr  
 genfstab -U /mnt >> /mnt/etc/fstab
 clear
 arch-chroot /mnt sh -c "$(curl -fsSL https://git.io/JLjW3)"
