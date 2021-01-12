@@ -7,7 +7,7 @@ efibootmgr -b 4 -B
 efibootmgr -b 5 -B
 timedatectl set-ntp true
 loadkeys ru
-setfont cyr-sun16
+setfont ter-k24n
 clear
 echo 'Разметка диска'
 while 
@@ -41,7 +41,7 @@ clear
 echo 'Server = http://mirror.yandex.ru/archlinux/$repo/os/$arch' | cat - /etc/pacman.d/mirrorlist > temp && mv temp /etc/pacman.d/mirrorlist
 echo 'Server = https://mirror.yandex.ru/archlinux/$repo/os/$arch' | cat - /etc/pacman.d/mirrorlist > temp && mv temp /etc/pacman.d/mirrorlist
 pacman -Sy --noconfirm
-pacstrap /mnt base base-devel linux linux-headers linux-firmware dhcpcd wget nano  efibootmgr  
+pacstrap /mnt base base-devel linux linux-headers linux-firmware dhcpcd wget which git terminus-font nano efibootmgr  
 genfstab -U /mnt >> /mnt/etc/fstab
 clear
 arch-chroot /mnt sh -c "$(curl -fsSL https://git.io/JLjW3)"
