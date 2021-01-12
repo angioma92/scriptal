@@ -114,6 +114,29 @@ pacman -Syu cabextract cups faudio lib32-acl lib32-faudio lib32-fontconfig lib32
 
 pacman -Rsu totem sushi evince eog baobab epiphany gnome-documents gnome-maps gnome-books gnome-contacts gnome-music gnome-photos gnome-software gnome-boxes wpa_supplicant --noconfirm
 
+echo 'Section "Device"' > /etc/X11/xorg.conf.d/20-amdgpu.conf
+echo '    Identifier "AMD"' >> /etc/X11/xorg.conf.d/20-amdgpu.conf
+echo '    Driver "amdgpu"' >> /etc/X11/xorg.conf.d/20-amdgpu.conf
+echo '    Option "TearFree" "true"' >> /etc/X11/xorg.conf.d/20-amdgpu.conf
+echo '    Option "DRI" "3"' >> /etc/X11/xorg.conf.d/20-amdgpu.conf
+echo 'EndSection' >> /etc/X11/xorg.conf.d/20-amdgpu.conf
+
+
+echo 'polkit.addRule(function(action, subject) {' > /etc/polkit-1/rules.d/90-corectrl.rules
+echo '    if ((action.id == "org.corectrl.helper.init" ||' >> /etc/polkit-1/rules.d/90-corectrl.rules
+echo '         action.id == "org.corectrl.helperkiller.init") &&' >> /etc/polkit-1/rules.d/90-corectrl.rules
+echo '        subject.local == true &&' >> /etc/polkit-1/rules.d/90-corectrl.rules
+echo '        subject.active == true &&' >> /etc/polkit-1/rules.d/90-corectrl.rules
+echo '        subject.isInGroup("wheel")) {' >> /etc/polkit-1/rules.d/90-corectrl.rules
+echo '            return polkit.Result.YES;' >> /etc/polkit-1/rules.d/90-corectrl.rules
+echo '    }' >> /etc/polkit-1/rules.d/90-corectrl.rules
+echo '});' >> /etc/polkit-1/rules.d/90-corectrl.rules
+
+
+
+echo 'UUID=12bf5ca9-9742-4868-9907-cff73d83ee37 /home/nik/250GB ext4 auto,users,rw 0 0' >> /etc/fstab
+echo 'UUID=70663DBE663D863E /home/nik/250GB ntfs auto,users,rw 0 0' >> /etc/fstab
+
 echo 'zram' > /etc/modules-load.d/zram.conf
 echo 'options zram num_devices=4' > /etc/modprobe.d/zram.conf
 echo 'KERNEL=="zram0", ATTR{disksize}="1024Mb" RUN="/usr/bin/mkswap /dev/zram0", TAG+="systemd"' > /etc/udev/rules.d/99-zram.rules
@@ -125,6 +148,7 @@ echo '/dev/zram1 none swap defaults 0 0' >> /etc/fstab
 echo '/dev/zram2 none swap defaults 0 0' >> /etc/fstab
 echo '/dev/zram3 none swap defaults 0 0' >> /etc/fstab
 echo "vm.swappiness=20" > /etc/sysctl.d/swap.conf
+
 
 clear
 exit
