@@ -8,7 +8,7 @@ ru_RU.UTF-8 UTF-8' > /etc/locale.gen
 locale-gen
 echo 'LANG=ru_RU.UTF-8' > /etc/locale.conf 
 echo 'KEYMAP=ru
-FONT=ter-k24n' > /etc/vconsole.conf
+FONT=ter-k22n' > /etc/vconsole.conf
 clear
 echo ''
 read -p "                 Введите имя компьютера: " hostname
