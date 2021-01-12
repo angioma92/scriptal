@@ -1,6 +1,7 @@
  
 #!/bin/bash
 read -p "Введите имя компьютера: " hostname
+clear 
 read -p "Введите имя пользователя: " username
 clear
 echo $hostname > /etc/hostname
@@ -25,6 +26,8 @@ echo 'Укажите пароль для пользователя '$username' '
 passwd $username
 clear
 
+echo '%wheel ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+
 bootctl install 
 echo ' default arch ' > /boot/loader/loader.conf
 echo 'title   ARCH LINUX' > /boot/loader/entries/arch.conf
@@ -47,8 +50,6 @@ sudo -u $username makepkg -si --noconfirm
 rm -Rf /home/$username/systemd-boot-pacman-hook
 cd /home/$username 
 mkinitcpio -p linux
-
-echo '%wheel ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
 
 echo '[multilib]' >> /etc/pacman.conf
 echo 'Include = /etc/pacman.d/mirrorlist' >> /etc/pacman.conf
