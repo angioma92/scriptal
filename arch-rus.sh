@@ -7,7 +7,7 @@ efibootmgr -b 4 -B
 efibootmgr -b 5 -B
 timedatectl set-ntp true
 loadkeys ru
-setfont ter-k24n
+setfont ter-k22n
 clear
 echo '                    Разметка диска'
 echo ''
