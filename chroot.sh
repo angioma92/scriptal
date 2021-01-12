@@ -1,16 +1,5 @@
  
 #!/bin/bash
-echo ''
-read -p "Введите имя компьютера: " hostname
-clear 
-echo ''
-read -p "Введите имя пользователя: " username
-clear
-echo $hostname > /etc/hostname
-echo 127.0.0.1    localhost >> /etc/hosts
-echo ::1          localhost >> /etc/hosts
-echo 127.0.1.1    $hostname.localdomain    $hostname >> /etc/hosts
-clear
 ln -sf /usr/share/zoneinfo/Asia/Irkutsk /etc/localtime
 echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
 echo "ru_RU.UTF-8 UTF-8" >> /etc/locale.gen
@@ -20,13 +9,24 @@ echo "KEYMAP=ru" > /etc/vconsole.conf
 echo "FONT=ter-k24n" >> /etc/vconsole.conf
 clear
 echo ''
-echo " Укажите пароль для ROOT "
+read -p "                 Введите имя компьютера: " hostname
+clear
+echo $hostname > /etc/hostname
+echo 127.0.0.1    localhost >> /etc/hosts
+echo ::1          localhost >> /etc/hosts
+echo 127.0.1.1    $hostname.localdomain    $hostname >> /etc/hosts
+clear
+echo ''
+read -p "                 Введите имя нового пользователя: " username
+clear
+echo ''
+echo "                    Создать пароль для ROOT "
 passwd
 
 useradd -m -G wheel,audio,video,storage,power -s /bin/bash $username
 clear
 echo ''
-echo 'Укажите пароль для пользователя '$username' '
+echo '                    Создать пароль для пользователя '$username' '
 passwd $username
 clear
 
@@ -41,7 +41,7 @@ echo  'initrd    /amd-ucode.img ' >> /boot/loader/entries/arch.conf
 echo "initrd    /initramfs-linux.img" >> /boot/loader/entries/arch.conf
 clear
 echo ''
-read -p "Укажите ROOT раздел для загрузчика (например: sda2): " root
+read -p "                 ROOT раздел для загрузчика (например: sda2): " root
 Proot=$(blkid -s PARTUUID /dev/$root | grep -oP '(?<=PARTUUID=").+?(?=")')
 echo options    root=PARTUUID=$Proot rw quiet splash mitigations=off amdgpu.ppfeaturemask=0xffffffff >> /boot/loader/entries/arch.conf
 
@@ -110,7 +110,6 @@ rm /home/$username/corectrl-1.1.1-5-x86_64.pkg.tar.zst
 
 pacman -S ufw --noconfirm
 ufw enable
-systemctl enable ufw
 
 pacman -S lib32-mesa vulkan-radeon lib32-vulkan-radeon vulkan-icd-loader lib32-vulkan-icd-loader --noconfirm
 
@@ -154,7 +153,11 @@ echo '/dev/zram1 none swap defaults 0 0' >> /etc/fstab
 echo '/dev/zram2 none swap defaults 0 0' >> /etc/fstab
 echo '/dev/zram3 none swap defaults 0 0' >> /etc/fstab
 echo "vm.swappiness=20" > /etc/sysctl.d/swap.conf
-
-
+sysctl -w vm.vfs_cache_pressure=1000
+echo "vm.vfs_cache_pressure=1000" >> /etc/sysctl.d/99-sysctl.conf
+echo "vm.dirty_background_ratio = 50" >> /etc/sysctl.conf
+echo "vm.dirty_ratio = 80" >> /etc/sysctl.conf
+systemctl enable ufw
+systemctl disable avahi-daemon
 clear
 exit
